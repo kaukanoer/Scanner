@@ -1,6 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
-import {AppRegistry, StyleSheet, Text, Alert, View, Button} from 'react-native';
+import {AppRegistry, StyleSheet, Text, Alert, View, Button, Clipboard} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 export default class App extends Component {
@@ -13,17 +13,21 @@ export default class App extends Component {
   }
   onSuccess(e) {
     this.setState({
-      dataqr: this.state.dataqr + '\n ' + e.data,
+      dataqr: e.data,
       status: 'Coba Lagi'
     })
     Alert.alert(
       'QR Code',
       'Code : '+e.data,
       [
-        {text: 'OK', onPress: () => console.log('OK Pressed')},
+        {text: 'OK', onPress:() => console.log('ok')},
       ],
       { cancelable: false }
     )
+  }
+
+  copytoClipboard = async ()=> {
+    await Clipboard.setString(this.state.dataqr)
   }
   render() {
     return (
@@ -31,27 +35,25 @@ export default class App extends Component {
         <View style={styles.conHeader}>
           <Text style={styles.textHeader}>QR Code</Text>
         </View>
+        <View style={{flexDirection: "row"}}>
+          <Text>Status: </Text>
+          <Button
+          onPress={()=>{
+            this.scanner.reactivate()
+            this.setState({status:'Ready'})
+          }}
+          title={this.state.status}/>
+        </View>
         <View style = {styles.conQR}>
           <QRCodeScanner
           onRead={this.onSuccess.bind(this)}
           ref={(node)=>{this.scanner = node}}
-          topContent={
-            <View>
-              <Button
-              onPress={()=>{
-                this.scanner.reactivate()
-                this.setState({status:'Ready'})
-              }}
-              title={this.state.status}/>
-            </View>
-          }
-          bottomContent={ 
-            <View>
-              <Text>Code {this.state.dataqr}</Text>
-            </View>
-          }
           />
         </View>
+          <View style={{flexDirection:'row'}}>
+            <Text>Code: {this.state.dataqr}{'  '} </Text>
+            <Button onPress={this.copytoClipboard} title="Copy"/>
+          </View>
      </View> 
     )
   }
