@@ -1,6 +1,7 @@
 package com.scanner;
 
 import com.facebook.react.ReactActivity;
+import org.reactnative.camera.RNCameraPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -10,6 +11,7 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "Scanner";
+        new RNCameraPackage();
+        return "Scanner";        
     }
 }

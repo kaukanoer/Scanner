@@ -1,49 +1,81 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+'use strict';
+import React, { Component } from 'react';
+import {AppRegistry, StyleSheet, Text, Alert, View, Button} from 'react-native';
+import QRCodeScanner from 'react-native-qrcode-scanner';
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-export default class App extends Component<Props> {
+export default class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      dataqr: '',
+      status: 'Ready'
+    };
+  }
+  onSuccess(e) {
+    this.setState({
+      dataqr: this.state.dataqr + '\n ' + e.data,
+      status: 'Coba Lagi'
+    })
+    Alert.alert(
+      'QR Code',
+      'Code : '+e.data,
+      [
+        {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ],
+      { cancelable: false }
+    )
+  }
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+     <View style={styles.conMain}>
+        <View style={styles.conHeader}>
+          <Text style={styles.textHeader}>QR Code</Text>
+        </View>
+        <View style = {styles.conQR}>
+          <QRCodeScanner
+          onRead={this.onSuccess.bind(this)}
+          ref={(node)=>{this.scanner = node}}
+          topContent={
+            <View>
+              <Button
+              onPress={()=>{
+                this.scanner.reactivate()
+                this.setState({status:'Ready'})
+              }}
+              title={this.state.status}/>
+            </View>
+          }
+          bottomContent={ 
+            <View>
+              <Text>Code {this.state.dataqr}</Text>
+            </View>
+          }
+          />
+        </View>
+     </View> 
+    )
   }
 }
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  conMain : {
+    flex:1
+  },
+  conHeader : {
+    flex:1,
+    backgroundColor: '#6200EE',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: 'center'
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  textHeader : {
+    fontSize: 18,
+    color :'white'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  conQR : {
+    flex:8,
+    // padding: 5
   },
+  centerText: {
+    fontSize: 12,
+    color: '#777',
+  }
 });
